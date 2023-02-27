@@ -1,9 +1,15 @@
 package com.example.tp_3;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,9 +18,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import android.Manifest;
+import androidx.core.app.ActivityCompat;
+
 
 import javax.crypto.Cipher;
 
@@ -23,11 +38,20 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<Contact> listContact;
     contactAdapter adapter;
+    public static final String FICHIER ="saveFile.txt";
+    private static final int REQUEST_CODE = 12;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        listContact = new ArrayList<Contact>();
+        listContact = LoadContact(this);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+        }
+
         adapter = new contactAdapter(getApplicationContext(),listContact);
         setContentView(R.layout.activity_main);
 
@@ -35,6 +59,40 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
     }
+
+    protected ArrayList<Contact> LoadContact(Context context){
+        ArrayList<Contact> contacts = new ArrayList<>();
+        File directory = getExternalFilesDir(null);
+        File file = new File(directory, FICHIER);
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            contacts = (ArrayList<Contact>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (IOException | ClassNotFoundException e) {
+        }
+        return contacts;
+    }
+
+    protected void SaveContact(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            File directory = getExternalFilesDir(null);
+            File file = new File(directory, FICHIER);
+            try {
+                FileOutputStream outputStream = new FileOutputStream(file);
+                ObjectOutputStream objectOut = new ObjectOutputStream(outputStream);
+                objectOut.writeObject(listContact);
+                objectOut.close();
+                outputStream.close();
+                System.out.println("Sauvegarde réussie dans le fichier " + FICHIER);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -57,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SaveContact();
     }
 
     public void OnClickCreate(View view){
