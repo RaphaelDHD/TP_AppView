@@ -26,8 +26,12 @@ public class Contact implements Serializable {
         return numPhone;
     }
 
-    public Contact(String nom, String prenom, String numPhone, String dateNaissance) {
+    public String getImg() {
+        return urlImage;
+    }
 
+    public Contact(String urlImage , String nom, String prenom, String numPhone, String dateNaissance) {
+        this.urlImage = urlImage;
         this.nom = nom;
         this.prenom = prenom;
         this.numPhone = numPhone;

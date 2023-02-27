@@ -2,10 +2,12 @@ package com.example.tp_3;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -54,6 +56,12 @@ class contactAdapter extends BaseAdapter {
 
         tv = (TextView) layoutItem.findViewById(R.id.textViewPrenom);
         tv.setText(list.get(position).getPrenom());
+
+        ImageView image = layoutItem.findViewById(R.id.imageView2);
+
+        if (list.get(position).getImg() != "") {
+            image.setImageURI(Uri.parse(list.get(position).getImg()));
+        }
 
         return layoutItem;
     }

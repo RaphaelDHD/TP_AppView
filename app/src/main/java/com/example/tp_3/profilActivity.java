@@ -3,7 +3,9 @@ package com.example.tp_3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class profilActivity extends AppCompatActivity {
@@ -27,6 +29,10 @@ public class profilActivity extends AppCompatActivity {
         textView.setText(contact.getNumPhone());
         textView = findViewById(R.id.textViewDateProfil);
         textView.setText(contact.getDateNaissance());
+        ImageView image = findViewById(R.id.imageViewProfil);
+        if (contact.getImg() != "") {
+            image.setImageURI(Uri.parse(contact.getImg()));
+        }
 
     }
 
