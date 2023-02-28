@@ -70,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
             contacts = (ArrayList<Contact>) ois.readObject();
             ois.close();
             fis.close();
+            Log.d("test" , "load réussi");
         } catch (IOException | ClassNotFoundException e) {
+
             Log.d("test","fail load");
         }
         return contacts;
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 objectOut.writeObject(listContact);
                 objectOut.close();
                 outputStream.close();
+                Log.d("test" , "sauvegard réussi");
                 System.out.println("Sauvegarde réussie dans le fichier " + FICHIER);
             } catch (IOException e) {
                 Log.d("test","fail save");
@@ -121,11 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SaveContact();
-    }
+
 
     public void OnClickCreate(View view){
         Intent myIntent = new Intent(MainActivity.this,CreateActivity.class);
@@ -139,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("test","result success");
             listContact.add((Contact)data.getSerializableExtra("ContactCreer"));
             adapter.notifyDataSetChanged();
+            SaveContact();
         }
     }
 
