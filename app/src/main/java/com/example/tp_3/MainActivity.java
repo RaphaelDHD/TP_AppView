@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             ois.close();
             fis.close();
         } catch (IOException | ClassNotFoundException e) {
+            Log.d("test","fail load");
         }
         return contacts;
     }
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 outputStream.close();
                 System.out.println("Sauvegarde réussie dans le fichier " + FICHIER);
             } catch (IOException e) {
+                Log.d("test","fail save");
                 e.printStackTrace();
             }
         }
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast toast = Toast.makeText(MainActivity.this, listContact.get(position).getPrenom() + " " + listContact.get(position).getNom() + " supprimé", Toast.LENGTH_SHORT);
+                toast.show();
                 listContact.remove(position);
                 adapter.notifyDataSetChanged();
                 return false;
