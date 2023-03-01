@@ -2,10 +2,14 @@ package com.example.tp_3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -26,6 +30,8 @@ public class profilActivity extends AppCompatActivity {
     int position;
     EditText dateEdit;
     final Calendar myCalendar= Calendar.getInstance();
+    private final int GALLERY_REQUEST_CODE = 78;
+    private static final int PICK_IMAGE_REQUEST = 13;
 
 
     @Override
@@ -100,4 +106,42 @@ public class profilActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.FRANCE);
         dateEdit.setText(dateFormat.format(myCalendar.getTime()));
     }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Le code de résultat est RESULT_OK uniquement si l'utilisateur sélectionne une image.
+        super.onActivityResult(requestCode, resultCode, data);
+        ImageView imageView = (ImageView) findViewById(R.id.imageViewProfil);
+        if (resultCode == Activity.RESULT_OK)
+            switch (requestCode) {
+                case GALLERY_REQUEST_CODE:
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String imgDecodableString = cursor.getString(columnIndex);
+                    img = cursor.getString(columnIndex);
+                    cursor.close();
+                    imageView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
+                    break;
+            }
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            // Obtenez l'URI de l'image sélectionnée
+            Uri uri = data.getData();
+            // Faites quelque chose avec l'URI de l'image, comme l'afficher dans une ImageView
+            imageView.setImageURI(uri);
+        }
+    }
+
+
+
+    public void onClickImageProfil(View view){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        String[] mimeTypes = {"image/jpeg", "image/png", "image/jpg"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
+    }
+
+
 }
