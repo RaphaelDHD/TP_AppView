@@ -40,12 +40,15 @@ public class MainActivity extends AppCompatActivity {
     contactAdapter adapter;
     public static final String FICHIER ="saveFile.txt";
     private static final int REQUEST_CODE = 12;
+    private static final int PROFIL_REQUEST = 50;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //listContact = new ArrayList<Contact>();
         listContact = LoadContact(this);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -108,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent myIntent = new Intent(MainActivity.this,profilActivity.class);
                 myIntent.putExtra("Contact",listContact.get(position));
-                startActivity(myIntent);
+                myIntent.putExtra("position",position);
+                startActivityForResult(myIntent,PROFIL_REQUEST);
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -137,6 +141,16 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 250 && resultCode == 10) {
             Log.d("test","result success");
             listContact.add((Contact)data.getSerializableExtra("ContactCreer"));
+            adapter.notifyDataSetChanged();
+            SaveContact();
+        }
+        if (requestCode == PROFIL_REQUEST && resultCode == 10){
+            Log.d("test","passage apres fin modif");
+            int pos = data.getIntExtra("position",1);
+            Log.d("test", String.valueOf(pos));
+            Contact cnt = (Contact) data.getSerializableExtra("ContactModifier");
+            listContact.set(pos,cnt);
+            Log.d("test",listContact.get(pos).getNom());
             adapter.notifyDataSetChanged();
             SaveContact();
         }
