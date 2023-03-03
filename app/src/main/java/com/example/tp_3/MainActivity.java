@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 toast.show();
                 listContact.remove(position);
                 adapter.notifyDataSetChanged();
+                SaveContact();
                 return false;
             }
         });
